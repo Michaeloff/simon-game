@@ -1,72 +1,77 @@
-const goButton = document.getElementById('goButton');
-const statusMessage = document.getElementById('statusMessage');
+const pads = document.querySelectorAll('.pad');
 
 let sequence = [];
-let userIndex = 0;
-
-goButton.addEventListener('click', startGame);
+let userSequence = [];
+let currentRound = 0;
+let gameActive = false;
 
 function startGame() {
+  document.getElementById('gameStatus').textContent = 'Game On!';
+  currentRound = 0;
   sequence = [];
-  userIndex = 0;
-  allowUserInput = false;
-  statusMessage.textContent = "";
-
-  // Generate 3-step random sequence
-  const colors = ['green', 'red', 'yellow', 'blue'];
-  for (let i = 0; i < 3; i++) {
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    sequence.push(randomColor);
-  }
-
-  playSequence(sequence);
+  nextRound();
 }
 
-function playSequence(seq) {
+function nextRound() {
+  currentRound++;
+  document.getElementById('roundCounter').textContent = `Round: ${currentRound}`;
+  userSequence = [];
+  
+  // Add a new random pad to the sequence for this round, building on the previous sequence
+  const randomPad = Math.floor(Math.random() * pads.length);
+  sequence.push(randomPad);
+
+  playSequence();
+}
+
+function playSequence() {
   let index = 0;
-  allowUserInput = false;
+  gameActive = false;
 
   const interval = setInterval(() => {
-    const color = seq[index];
-    const pad = document.querySelector(`.pad[data-color="${color}"]`);
-    
-    pad.classList.add('active');
-    playSound(color);
-
-    setTimeout(() => {
-      pad.classList.remove('active');
-    }, 200);
-
+    const padIndex = sequence[index];
+    flashPad(pads[padIndex], padIndex);
     index++;
-    if (index === seq.length) {
+
+    if (index >= sequence.length) {
       clearInterval(interval);
-      setTimeout(() => {
-        allowUserInput = true;
-        userIndex = 0;
-      }, 300); // brief pause before allowing input
+      gameActive = true;
     }
+  }, 1000);
+}
+
+function flashPad(pad, padIndex) {
+  pad.style.opacity = 0.5;
+  playSound(padIndex);
+  setTimeout(() => {
+    pad.style.opacity = 1;
   }, 500);
 }
 
-function handleUserClick(color) {
-  if (color === sequence[userIndex]) {
-    userIndex++;
-    if (userIndex === sequence.length) {
-      statusMessage.textContent = "✅ Correct!";
-      allowUserInput = false;
-    }
-  } else {
-    statusMessage.textContent = "❌ Try Again!";
-    allowUserInput = false;
-  }
-}
+pads.forEach((pad, index) => {
+  pad.addEventListener('click', () => {
+    if (!gameActive) return;
+    userSequence.push(index);
+    flashPad(pad, index);
 
-function playSound(color) {
-  const sounds = {
-    green: new Audio('/sounds/green-tone.mp3'),
-    red: new Audio('/sounds/red-tone.mp3'),
-    yellow: new Audio('/sounds/yellow-tone.mp3'),
-    blue: new Audio('/sounds/blue-tone.mp3')
-  };
-  sounds[color].play();
+    if (userSequence[userSequence.length - 1] !== sequence[userSequence.length - 1]) {
+      endGame(false);
+    } else if (userSequence.length === sequence.length) {
+      if (currentRound === 5) {
+        endGame(true);  // If 5 rounds are completed, player wins
+      } else {
+        setTimeout(nextRound, 1000);  // Move to the next round after 1 second
+      }
+    }
+  });
+});
+
+function endGame(win) {
+  gameActive = false;
+  if (win) {
+    document.getElementById('gameStatus').textContent = `You won! Completed ${currentRound} rounds.`;
+  } else {
+    document.getElementById('gameStatus').textContent = `Game Over! You made a mistake. You reached round ${currentRound}.`;
+  }
+  document.getElementById('roundCounter').textContent = `Round: ${currentRound}`;
 }

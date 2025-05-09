@@ -1,1 +1,27 @@
+# Node modules
 node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# VS Code settings (optional, if you don't want to share them)
+.vscode/
+
+# Optional build artifacts
+dist/
+build/
+
+# BrowserSync generated files (if any)
+.bs-sync*
+
+# Temporary files
+*.log

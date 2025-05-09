@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simon Says</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="simon">
+      <div class="pad green" data-color="green"></div>
+      <div class="pad red" data-color="red"></div>
+      <div class="pad yellow" data-color="yellow"></div>
+      <div class="pad blue" data-color="blue"></div>
+    </div>
+
+    <div id="controls">
+      <button id="goButton">Go</button>
+      <div id="statusMessage"></div>
+    </div>
+  </div>
+
+  <script src="/js/script.js"></script> <!-- Pad interaction logic -->
+  <script src="/js/game.js"></script>   <!-- Game sequence logic -->
+</body>
+</html>

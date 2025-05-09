@@ -1,3 +1,5 @@
+import { playSound } from './sounds.js';
+
 const pads = document.querySelectorAll('.pad');
 
 let sequence = [];
@@ -5,7 +7,9 @@ let userSequence = [];
 let currentRound = 0;
 let gameActive = false;
 
-function startGame() {
+document.getElementById('goButton').addEventListener('click', startGame);
+
+export function startGame() {
   document.getElementById('gameStatus').textContent = 'Game On!';
   currentRound = 0;
   sequence = [];
@@ -37,15 +41,17 @@ function playSequence() {
       clearInterval(interval);
       gameActive = true;
     }
-  }, 1000);
+  }, 600);
 }
 
 function flashPad(pad, padIndex) {
-  pad.style.opacity = 0.5;
+  pad.style.opacity = 1;
+  pad.style.filter = "brightness(1.7)"; // Makes the pad brighter
   playSound(padIndex);
   setTimeout(() => {
-    pad.style.opacity = 1;
-  }, 500);
+    pad.style.opacity = 0.7;
+    pad.style.filter = "brightness(1)"; // Reset brightness
+  }, 200);
 }
 
 pads.forEach((pad, index) => {
@@ -57,10 +63,10 @@ pads.forEach((pad, index) => {
     if (userSequence[userSequence.length - 1] !== sequence[userSequence.length - 1]) {
       endGame(false);
     } else if (userSequence.length === sequence.length) {
-      if (currentRound === 5) {
-        endGame(true);  // If 5 rounds are completed, player wins
+      if (currentRound === 100) {
+        endGame(true);  // If 100 rounds are completed, player wins
       } else {
-        setTimeout(nextRound, 1000);  // Move to the next round after 1 second
+        setTimeout(nextRound, 500);  // Move to the next round after 1/2 second
       }
     }
   });

@@ -6,7 +6,7 @@ const sounds = {
 };
 
 // Function to play the corresponding sound based on the pad index
-function playSound(index) {
+export function playSound(index) {
   switch (index) {
     case 0: sounds.green.play(); break;
     case 1: sounds.red.play(); break;

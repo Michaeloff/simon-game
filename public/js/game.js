@@ -35,7 +35,7 @@ function playSequence(seq) {
 
     setTimeout(() => {
       pad.classList.remove('active');
-    }, 300);
+    }, 200);
 
     index++;
     if (index === seq.length) {
@@ -43,9 +43,9 @@ function playSequence(seq) {
       setTimeout(() => {
         allowUserInput = true;
         userIndex = 0;
-      }, 500); // brief pause before allowing input
+      }, 300); // brief pause before allowing input
     }
-  }, 600);
+  }, 500);
 }
 
 function handleUserClick(color) {

@@ -5,12 +5,14 @@ const pads = document.querySelectorAll('.pad');
 let sequence = [];
 let userSequence = [];
 let currentRound = 0;
-let gameActive = false;
+let isPlayerTurn = false;
 
 document.getElementById('goButton').addEventListener('click', startGame);
 
-export function startGame() {
-  document.getElementById('gameStatus').textContent = 'Game On!';
+function startGame() {
+  document.getElementById('statusMessage').textContent = 'Game On!';
+  //document.getElementById('goButton').style.display = 'none'; // Hide button
+  document.getElementById('goButton').disabled = true; // Disable button
   currentRound = 0;
   sequence = [];
   nextRound();
@@ -30,7 +32,7 @@ function nextRound() {
 
 function playSequence() {
   let index = 0;
-  gameActive = false;
+  isPlayerTurn = false;
 
   const interval = setInterval(() => {
     const padIndex = sequence[index];
@@ -39,7 +41,7 @@ function playSequence() {
 
     if (index >= sequence.length) {
       clearInterval(interval);
-      gameActive = true;
+      isPlayerTurn = true;
     }
   }, 600);
 }
@@ -56,28 +58,38 @@ function flashPad(pad, padIndex) {
 
 pads.forEach((pad, index) => {
   pad.addEventListener('click', () => {
-    if (!gameActive) return;
+    if (!isPlayerTurn) return;
+
+    isPlayerTurn = false; // Prevent further clicks while flashing
     userSequence.push(index);
     flashPad(pad, index);
 
-    if (userSequence[userSequence.length - 1] !== sequence[userSequence.length - 1]) {
-      endGame(false);
-    } else if (userSequence.length === sequence.length) {
-      if (currentRound === 100) {
-        endGame(true);  // If 100 rounds are completed, player wins
+    setTimeout(() => {
+      // After flash finishes
+      if (userSequence[userSequence.length - 1] !== sequence[userSequence.length - 1]) {
+        endGame(false);
+      } else if (userSequence.length === sequence.length) {
+        if (currentRound === 100) {
+          endGame(true);
+        } else {
+          setTimeout(nextRound, 500);
+        }
       } else {
-        setTimeout(nextRound, 500);  // Move to the next round after 1/2 second
+        isPlayerTurn = true; // Allow next input
       }
-    }
+    }, 300); // Slightly longer than flash duration (200ms)
   });
 });
 
 function endGame(win) {
-  gameActive = false;
+  isPlayerTurn = false;
+  //document.getElementById('goButton').style.display = 'inline-block'; // Show button
+  document.getElementById('goButton').disabled = false; // Re-enable button
+
   if (win) {
-    document.getElementById('gameStatus').textContent = `You won! Completed ${currentRound} rounds.`;
+    document.getElementById('statusMessage').textContent = `You won! Completed ${currentRound} rounds.`;
   } else {
-    document.getElementById('gameStatus').textContent = `Game Over! You made a mistake. You reached round ${currentRound}.`;
+    document.getElementById('statusMessage').textContent = `Game Over! You reached round ${currentRound}.`;
   }
   document.getElementById('roundCounter').textContent = `Round: ${currentRound}`;
 }
